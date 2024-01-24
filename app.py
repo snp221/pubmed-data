@@ -4,8 +4,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime, timedelta
-from sentence_transformers import SentenceTransformer, util
-
+#from sentence_transformers import SentenceTransformer, util
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 
@@ -13,13 +14,13 @@ def similarity_document(df):
     docs = df['AB'].tolist()
 
     # Load a pre-trained biomedical model
-    biomedical_model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
+    #biomedical_model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
 
     # Sample biomedical text data
     biomedical_texts = docs
 
     # Generate embeddings for biomedical texts
-    biomedical_embeddings = biomedical_model.encode(biomedical_texts)
+    #biomedical_embeddings = biomedical_model.encode(biomedical_texts)
 
     # Streamlit app layout
     st.title("Biomedical Text Similarity App")
@@ -30,10 +31,20 @@ def similarity_document(df):
         st.sidebar.warning("Please enter a query.")
         st.stop()
 
-    # Calculate similarity scores
-    query_embedding = biomedical_model.encode([query])
-    similarity_scores = util.pytorch_cos_sim(query_embedding, biomedical_embeddings).flatten()
+    all_texts = [query] + biomedical_texts
 
+    # Convert texts to TF-IDF vectors
+    vectorizer = TfidfVectorizer()
+    tfidf_matrix = vectorizer.fit_transform(all_texts)
+
+    # Calculate cosine similarity scores
+    similarity_scores = cosine_similarity(tfidf_matrix[0], tfidf_matrix[1:]).flatten()
+
+
+    # Calculate similarity scores
+    # biomedical_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+    # query_embedding = biomedical_model.encode([query])
+    # similarity_scores = cosine_similarity(query_embedding, biomedical_embeddings).flatten()
 
 
     #doc_score_pairs = list(zip(biomedical_texts, similarity_scores))
