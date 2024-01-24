@@ -120,7 +120,7 @@ def main():
 
 # Create a dropdown menu
     selected_disease = st.sidebar.selectbox("Select a disease", diseases)
-    df = pd.read_csv(f"drive/MyDrive/{selected_disease.replace(' ','')}.csv")
+    df = pd.read_csv(f"./{selected_disease.replace(' ','')}.csv")
 
     df.dropna(subset=['AB'], inplace=True)
     df.reset_index(drop=True,inplace=True)  
